@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 #include "CoreMinimal.h"
@@ -16,14 +16,15 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 public:
-	/* ÓÃ»§½Ó¿Ú */
+	/* ç”¨æˆ·æ¥å£ */
 	/**
-	¸ù¾İÈÕÖ¾ÀàĞÍÃû,½«ÈÕÖ¾Ğ´Èëµ½²»Í¬µÄÎÄ¼ş
+	æ ¹æ®æ—¥å¿—ç±»å‹å,å°†æ—¥å¿—å†™å…¥åˆ°ä¸åŒçš„æ–‡ä»¶
 
-	×¢Òâ: ÔÚUMultiLogSubsystem×ÓÏµÍ³»¹Ã»Æô¶¯Ö®Ç°µ÷ÓÃ½«¶ªÊ§ÈÕÖ¾ĞÅÏ¢
+	æ³¨æ„: åœ¨UMultiLogSubsystemå­ç³»ç»Ÿè¿˜æ²¡å¯åŠ¨ä¹‹å‰è°ƒç”¨å°†ä¸¢å¤±æ—¥å¿—ä¿¡æ¯
+	å»ºè®®: å»ºè®®å°†è¿™ä¸ªæ¥å£ç”¨å®å°è£…èµ·æ¥,æ¯”å¦‚ LOG_Error()...
 	*/
 	template<typename FmtType, typename ...Types>
-	static void AddLog(const FString& LogTypeName, const MultiLogLevel Level, const FmtType& Format, Types ...Args)
+	static void AddLog(const FString& LogTypeName, const EMultiLogLevel Level, const FmtType& Format, Types ...Args)
 	{
 		if (IsValid(MultiLogSubsystem))
 		{
@@ -33,19 +34,20 @@ public:
 			FString LineLog = CurrTime.ToString(TEXT("[%Y.%m.%d-%H.%M.%S.%s] "));
 			switch (Level)
 			{
-			case MultiLogLevel::Error:		LineLog.Append(TEXT("[Error] : "));		break;
-			case MultiLogLevel::Warning:	LineLog.Append(TEXT("[Warning] : "));	break;
-			case MultiLogLevel::Info:		LineLog.Append(TEXT("[Info] : "));		break;
-			case MultiLogLevel::DebugInfo:	LineLog.Append(TEXT("[DebugInfo] : "));	break;
+			case EMultiLogLevel::Error:		LineLog.Append(TEXT("[Error] : "));		break;
+			case EMultiLogLevel::Warning:	LineLog.Append(TEXT("[Warning] : "));	break;
+			case EMultiLogLevel::Info:		LineLog.Append(TEXT("[Info] : "));		break;
+			case EMultiLogLevel::DebugInfo:	LineLog.Append(TEXT("[DebugInfo] : "));	break;
+			default: checkf(false, TEXT("UMultiLogSubsystem::AddLog Error!!!! EMultiLogLevel Mismatch!"));
 			}
 			LineLog.Append(Log);
 			LineLog.AppendChar(TEXT('\n'));
 
-			MultiLogSubsystem->AddLog_Inward(LogTypeName, LineLog);
+			MultiLogSubsystem->AddLog_Inward(LogTypeName, LineLog, Level);
 		}
 		else
 		{
-			// ³¢ÊÔ»ñÈ¡MultiLogSubsystem
+			// å°è¯•è·å–MultiLogSubsystem
 			MultiLogSubsystem = GEngine->GetEngineSubsystem<UMultiLogSubsystem>();
 			if (IsValid(MultiLogSubsystem))
 			{
@@ -54,12 +56,19 @@ public:
 		}
 	};
 
+	/* è“å›¾è°ƒç”¨å¾—æ‰“å°æ—¥å¿—æ¥å£ */
+	UFUNCTION(BlueprintCallable, Category = "MultiLogSubsystem")
+	void PrintLog(const FString& LogTypeName, const FString& Log, const EMultiLogLevel Level);
+
+	/* è®¾ç½®æ—¥å¿—ç­‰çº§ */
+	static bool SetMultiLogLeve(const FString& LogTypeName, const EMultiLogLevel Level);
+
 private:
-	void AddLog_Inward(const FString& LogTypeName, FString& LineLog);
+	void AddLog_Inward(const FString& LogTypeName, FString& LineLog, const EMultiLogLevel Level);
 
 	static UMultiLogSubsystem* MultiLogSubsystem;
 
-	// ×ÓÏµÍ³Æô¶¯Ê±¼ä
+	// å­ç³»ç»Ÿå¯åŠ¨æ—¶é—´
 	FString InitTime;
 
 	FMultiLogWriteWorker LogWriteWorker;

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "LogTest.h"
@@ -23,20 +23,20 @@ void ALogTest::BeginPlay()
 void ALogTest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), MultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), MultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), MultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), MultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), MultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), MultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), MultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), MultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), MultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), MultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), MultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), MultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
 	/*UE_LOG(LogTemp, Log, TEXT("%02d:%02d"), 1, 2);
 	UE_LOG(LogTemp, Log, TEXT("%02d:%02d"), 1, 2);

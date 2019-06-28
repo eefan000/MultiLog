@@ -1,31 +1,31 @@
-#pragma once
+ï»¿#pragma once
 #include "Core.h"
 #include "Containers/Queue.h"
 #include "MultiLogType.h"
 
 /*
-²»¶ÏµÄ½«ÈÕÖ¾Ğ´Èë¶à¸öÄ¿±êÎÄ¼ş
+ä¸æ–­çš„å°†æ—¥å¿—å†™å…¥å¤šä¸ªç›®æ ‡æ–‡ä»¶
 */
 class FMultiLogWriteWorker : public FRunnable
 {
-	/** Ğ´ÈëÏß³Ìµ¥Àı */
+	/** å†™å…¥çº¿ç¨‹å•ä¾‹ */
 	static  FMultiLogWriteWorker* Runnable;
 
-	/** Êµ¼ÊÏß³Ì,ÓÃÀ´Ö´ĞĞFMultiLogWriteWorker */
+	/** å®é™…çº¿ç¨‹,ç”¨æ¥æ‰§è¡ŒFMultiLogWriteWorker */
 	FRunnableThread* Thread;
 
-	/** ÊÇ·ñÌáÇ°½áÊøĞ´ÈëÈÎÎñ */
+	/** æ˜¯å¦æå‰ç»“æŸå†™å…¥ä»»åŠ¡ */
 	bool StopTask = false;
 
 private:
-	/** ´ıĞ´ÈëÎÄ¼şµÄÈÕÖ¾ */
+	/** å¾…å†™å…¥æ–‡ä»¶çš„æ—¥å¿— */
 	TQueue<LineLog, EQueueMode::Mpsc> LogBuff;
 
-	void WriteLogBuffToFile();
+	void WriteLogBuffToFile(bool IsFlush = false);
 public:
 	void AddLog(LineLog&& Log);
 public:
-	// ÊÇ·ñÍê³ÉËùÓĞĞ´Èë¹¤×÷
+	// æ˜¯å¦å®Œæˆæ‰€æœ‰å†™å…¥å·¥ä½œ
 	bool IsFinished() const
 	{
 		return !LogBuff.IsEmpty();
@@ -44,16 +44,16 @@ public:
 	virtual void Exit();
 	// End FRunnable interface
 
-	/** µÈ´ıÏß³Ì½áÊø */
+	/** ç­‰å¾…çº¿ç¨‹ç»“æŸ */
 	void EnsureCompletion();
 
 
 
 	//~~~ Starting and Stopping Thread ~~~
 
-	/* Æô¶¯Ğ´ÈëÏß³Ì */
+	/* å¯åŠ¨å†™å…¥çº¿ç¨‹ */
 	static FMultiLogWriteWorker* JoyInit();
 
-	/** ¹Ø±ÕĞ´ÈëÏß³Ì */
+	/** å…³é—­å†™å…¥çº¿ç¨‹ */
 	static void Shutdown();
 };

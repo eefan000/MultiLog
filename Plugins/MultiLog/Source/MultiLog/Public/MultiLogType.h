@@ -1,23 +1,27 @@
-#pragma once
+О╩©#pragma once
 #include "CoreMinimal.h"
+#include "MultiLogType.generated.h"
 
-enum MultiLogLevel
+UENUM(BlueprintType)
+enum EMultiLogLevel
 {
-	// яожь╢МнС,╩А╣╪жбЁлпРнч╥╗уЩЁёткпп
-	Error = 0,
-	// рЛЁё╬╞╦Ф,ЁЖожак╡╩уЩЁёгИ©Ж,╣╚йг╩╧╡╩жасз╣╪жбЁлпРнч╥╗ткпп
-	Warning,
-	// уЩЁёткпппео╒,спжЗсзЁЖнйлБй╠╡ИураВЁл,╣╚йг╡╩р╙л╚╤Ю,ж╩тзр╩п╘╡╩л╚ф╣╥╠╤Ьгр╠х╫о╧ь╪Э╣д╣ь╥╫
-	Info,
-	// ╧╕дэ©╙╥╒й╠сц╣даый╠╣Вйтпео╒
-	DebugInfo,
+	// Х©≥Ф≤╞Г■╗Д╨▌Е┘ЁИ≈╜Ф┴─Ф°┴Ф≈╔Е©≈,Д╦█Х╕│Г■╗Х©≥Д╦╙Г╜┴Г╨╖Ф┴⌠Е█╟Ф╤┬Ф│╞
+	NoLog = -1 UMETA(DisplayName = "NoLog"),
+	// Д╦╔И┤█И■≥Х╞╞,Д╪ Е╞╪Х┤╢Г╗▀Е╨▐Ф≈═ФЁ∙Ф╜ёЕ╦╦Х©░Х║▄
+	Error = 1 UMETA(DisplayName = "Error"),
+	// Е╪┌Е╦╦Х╜╕Е▒┼,Е┤╨Г▌╟Д╨├Д╦█Ф╜ёЕ╦╦Ф┐┘Е├╣,Д╫├Ф≤╞Х©≤Д╦█Х┤ЁД╨▌Е╞╪Х┤╢Г╗▀Е╨▐Ф≈═ФЁ∙Х©░Х║▄
+	Warning UMETA(DisplayName = "Warning"),
+	// Ф╜ёЕ╦╦Х©░Х║▄Д©║Ф│╞,Ф°┴Е┼╘Д╨▌Е┤╨И≈╝И╒≤Ф≈╤Ф÷╔Ф┴╬Ф╣│Г╗▀,Д╫├Ф≤╞Д╦█Х╕│Е╓╙Е╓ ,Е▐╙Е°╗Д╦─Д╨⌡Д╦█Е╓╙И╒▒Г╧│Х─▄Д╦■Ф╞■Х╬┐Е┘ЁИ■╝Г └Е°╟Ф√╧
+	Info UMETA(DisplayName = "Info"),
+	// Е┼÷Х┐╫Е╪─Е▐▒Ф≈╤Г■╗Г └Д╦╢Ф≈╤Х╟┐Х╞∙Д©║Ф│╞
+	DebugInfo UMETA(DisplayName = "DebugInfo"),
 };
 
 struct LogFileInfo
 {
-	// ╣╠г╟хуж╬╣х╪╤,д╛хож╩╢Рс║ LogLevel::Info╪╟ртио
-	MultiLogLevel NowLogLevel = MultiLogLevel::Info;
-	// ╣╠г╟хуж╬нд╪Ч╬Д╠З
+	// Е╫⌠Е┴█Ф≈╔Е©≈Г╜┴Г╨╖,И╩≤Х╝╓Е▐╙Ф┴⌠Е█╟ LogLevel::InfoЕ▐┼Д╩╔Д╦┼
+	EMultiLogLevel NowLogLevel = EMultiLogLevel::Info;
+	// Е╫⌠Е┴█Ф≈╔Е©≈Ф√┤Д╩╤Е▐╔Ф÷└
 	FArchive* File;
 };
 

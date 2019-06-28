@@ -1,7 +1,45 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MultiLogSubsystem.h"
+
+// Ê≥®ÂÜåÊéßÂà∂Âè∞Êåá‰ª§
+FAutoConsoleCommand SetMultiLogLevel(
+	TEXT("MultiLog.SetMultiLogLevel"),
+	TEXT("MultiLog.SetMultiLogLevel LogTypeName LogLeveln\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"),
+	FConsoleCommandWithWorldArgsAndOutputDeviceDelegate::CreateStatic(
+		[](const TArray<FString>& Param, UWorld* _World, FOutputDevice& OutputDevice)
+		{
+			if (Param.Num() == 2)
+			{
+				FString LogTypeName = Param[0];
+				int32 LogLeve = FCString::Atoi(*Param[1]);
+				if (LogLeve > 0 || LogLeve == EMultiLogLevel::NoLog)
+				{
+					LogLeve = FMath::Min(LogLeve, (int32)EMultiLogLevel::DebugInfo);
+					bool IsSet = UMultiLogSubsystem::SetMultiLogLeve(LogTypeName, (EMultiLogLevel)LogLeve);
+
+					if (IsSet)
+					{
+						OutputDevice.Logf(TEXT("OK! LogTypeName=%s  LogLeve=%d"), *LogTypeName, LogLeve);
+					}
+					else
+					{
+						OutputDevice.Logf(TEXT("The specified LogTypeName was not found!!  LogTypeName=%s"), *LogTypeName);
+					}
+				}
+				else
+				{
+					OutputDevice.Logf(TEXT("LogLevel error!\n\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"));
+				}
+			}
+			else
+			{
+				OutputDevice.Logf(TEXT("Insufficient parameters!"));
+			}
+		}
+	)
+);
 
 UMultiLogSubsystem* UMultiLogSubsystem::MultiLogSubsystem = nullptr;
 
@@ -19,20 +57,44 @@ void UMultiLogSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UMultiLogSubsystem::Deinitialize()
 {
-	// πÿ±’–¥»Î»’÷æœﬂ≥Ã
+	// ÂÖ≥Èó≠ÂÜôÂÖ•Êó•ÂøóÁ∫øÁ®ã
 	LogWriteWorker.Shutdown();
-	//  Õ∑≈»’÷æŒƒº˛æ‰±˙
+	// ÈáäÊîæÊó•ÂøóÊñá‰ª∂Âè•ÊüÑ
 	for (auto& K_V : MultiLogFile)
 	{
 		K_V.Value.File->Close();
 	}
 	MultiLogFile.Empty();
 }
-void UMultiLogSubsystem::AddLog_Inward(const FString& LogTypeName, FString& Line)
+
+void UMultiLogSubsystem::PrintLog(const FString& LogTypeName, const FString& Log, const EMultiLogLevel Level)
+{
+	AddLog(LogTypeName, Level, TEXT("%s"), *Log);
+}
+
+bool UMultiLogSubsystem::SetMultiLogLeve(const FString& LogTypeName, const EMultiLogLevel Level)
+{
+	if (IsValid(MultiLogSubsystem))
+	{
+		LogFileInfo* Info = MultiLogSubsystem->MultiLogFile.Find(LogTypeName);
+		if (Info)
+		{
+			Info->NowLogLevel = Level;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void UMultiLogSubsystem::AddLog_Inward(const FString& LogTypeName, FString& Line, const EMultiLogLevel Level)
 {
 	if (LogFileInfo * Info = MultiLogFile.Find(LogTypeName))
 	{
-		LogWriteWorker.AddLog(LineLog(Line, Info));
+		if (Level <= Info->NowLogLevel)
+		{
+			LogWriteWorker.AddLog(LineLog(Line, Info));
+		}
 	}
 	else
 	{
@@ -46,6 +108,9 @@ void UMultiLogSubsystem::AddLog_Inward(const FString& LogTypeName, FString& Line
 
 		MultiLogFile.Add(LogTypeName, NewLogFileInfo);
 
-		LogWriteWorker.AddLog(LineLog(Line, &NewLogFileInfo));
+		if (Level <= NewLogFileInfo.NowLogLevel)
+		{
+			LogWriteWorker.AddLog(LineLog(Line, &NewLogFileInfo));
+		}
 	}
 }

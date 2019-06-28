@@ -1,15 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include "MultiLogWriteThreads.h"
 //Thread Worker Starts as NULL, prior to being instanced. This line is essential! Compiler error without it
 FMultiLogWriteWorker* FMultiLogWriteWorker::Runnable = NULL;
 //***********************************************************
 
-void FMultiLogWriteWorker::WriteLogBuffToFile()
+void FMultiLogWriteWorker::WriteLogBuffToFile(bool IsFlush)
 {
 	LineLog Temp;
 	while (LogBuff.Dequeue(Temp))
 	{
 		Temp.LogFile.File->Serialize(TCHAR_TO_UTF8(*Temp.Line), Temp.Line.Len());
+		if (IsFlush)
+		{
+			Temp.LogFile.File->Flush();
+		}
 	}
 }
 
@@ -38,7 +42,7 @@ bool FMultiLogWriteWorker::Init()
 //Run
 uint32 FMultiLogWriteWorker::Run()
 {
-	//Æô¶¯³õÊ¼µÈ´ı
+	//å¯åŠ¨åˆå§‹ç­‰å¾…
 	FPlatformProcess::Sleep(0.05);
 
 	while (!StopTask)
@@ -57,7 +61,7 @@ void FMultiLogWriteWorker::Stop()
 
 void FMultiLogWriteWorker::Exit()
 {
-	WriteLogBuffToFile();
+	WriteLogBuffToFile(true);
 }
 
 FMultiLogWriteWorker* FMultiLogWriteWorker::JoyInit()

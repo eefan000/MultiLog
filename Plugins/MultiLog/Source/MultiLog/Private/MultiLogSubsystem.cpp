@@ -1,5 +1,5 @@
 ﻿#include "MultiLogSubsystem.h"
-
+__pragma(optimize("", off))
 // 注册控制台指令
 FAutoConsoleCommand SetMultiLogLevel(
 	TEXT("MultiLog.SetMultiLogLevel"),
@@ -43,14 +43,15 @@ UMultiLogSubsystem* UMultiLogSubsystem::MultiLogSubsystem = nullptr;
 UMultiLogSubsystem::~UMultiLogSubsystem()
 {
 	Deinitialize();
-}
+};
 
 void UMultiLogSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	FDateTime CurrTime = FDateTime::Now();
 	InitTime = CurrTime.ToString(TEXT("-%Y.%m.%d-%H.%M.%S"));
 	LogWriteWorker.JoyInit();
-}
+	MultiLogSubsystem = this;
+};
 
 void UMultiLogSubsystem::Deinitialize()
 {
@@ -62,26 +63,45 @@ void UMultiLogSubsystem::Deinitialize()
 		K_V.Value.File->Close();
 	}
 	MultiLogFile.Empty();
-}
+};
 
 void UMultiLogSubsystem::PrintLog(const FString& LogTypeName, const FString& Log, const EMultiLogLevel Level)
 {
 	AddLog(LogTypeName, Level, TEXT("%s"), *Log);
-}
+};
 
 bool UMultiLogSubsystem::SetMultiLogLeve(const FString& LogTypeName, const EMultiLogLevel Level)
+{
+	LogFileInfo* Info = RegisterLogTypeName(LogTypeName);
+	if (Info)
+	{
+		Info->NowLogLevel = Level;
+		return true;
+	}
+
+	return false;
+};
+
+LogFileInfo* UMultiLogSubsystem::RegisterLogTypeName(const FString& LogTypeName)
 {
 	if (IsValid(MultiLogSubsystem))
 	{
 		LogFileInfo* Info = MultiLogSubsystem->MultiLogFile.Find(LogTypeName);
-		if (Info)
+		if (Info == nullptr)
 		{
-			Info->NowLogLevel = Level;
-			return true;
-		}
-	}
+			FString FileName = LogTypeName + MultiLogSubsystem->InitTime + ".log";
+			FString FilePath = FPaths::Combine(FPaths::ProjectLogDir(), LogTypeName, FileName);
+			IFileManager* FileManager = &IFileManager::Get();
+			FArchive* FileArchive = FileManager->CreateFileWriter(*FilePath, FILEWRITE_AllowRead);
+			
+			LogFileInfo NewLogFileInfo;
+			NewLogFileInfo.File = FileArchive;
 
-	return false;
+			return &MultiLogSubsystem->MultiLogFile.Add(LogTypeName, NewLogFileInfo);
+		}
+		return Info;
+	}
+	return nullptr;
 }
 
 void UMultiLogSubsystem::AddLog_Inward(const FString& LogTypeName, FString& Line, const EMultiLogLevel Level)
@@ -95,19 +115,11 @@ void UMultiLogSubsystem::AddLog_Inward(const FString& LogTypeName, FString& Line
 	}
 	else
 	{
-		FString FileName = LogTypeName + InitTime + ".log";
-		FString FilePath = FPaths::Combine(FPaths::ProjectLogDir(), LogTypeName, FileName);
-		IFileManager* FileManager = &IFileManager::Get();
-		FArchive* FileArchive = FileManager->CreateFileWriter(*FilePath, FILEWRITE_AllowRead);
-
-		LogFileInfo NewLogFileInfo;
-		NewLogFileInfo.File = FileArchive;
-
-		MultiLogFile.Add(LogTypeName, NewLogFileInfo);
-
-		if (Level <= NewLogFileInfo.NowLogLevel)
+		LogFileInfo*  NewLogFileInfo = RegisterLogTypeName(LogTypeName);
+		if (Level <= NewLogFileInfo->NowLogLevel)
 		{
-			LogWriteWorker.AddLog(LineLog(Line, &NewLogFileInfo));
+			LogWriteWorker.AddLog(LineLog(Line, NewLogFileInfo));
 		}
 	}
 }
+__pragma(optimize("", on))

@@ -45,15 +45,6 @@ public:
 
 			MultiLogSubsystem->AddLog_Inward(LogTypeName, LineLog, Level);
 		}
-		else
-		{
-			// 尝试获取MultiLogSubsystem
-			MultiLogSubsystem = GEngine->GetEngineSubsystem<UMultiLogSubsystem>();
-			if (IsValid(MultiLogSubsystem))
-			{
-				AddLog(LogTypeName, Level, Format, Args...);
-			}
-		}
 	};
 
 	/* 蓝图调用得打印日志接口 */
@@ -62,6 +53,9 @@ public:
 
 	/* 设置日志等级 */
 	static bool SetMultiLogLeve(const FString& LogTypeName, const EMultiLogLevel Level);
+
+	/* 注册日志文件类型 */
+	static LogFileInfo* RegisterLogTypeName(const FString& LogTypeName);
 
 private:
 	void AddLog_Inward(const FString& LogTypeName, FString& LineLog, const EMultiLogLevel Level);

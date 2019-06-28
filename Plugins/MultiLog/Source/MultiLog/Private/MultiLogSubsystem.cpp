@@ -6,7 +6,7 @@
 // 注册控制台指令
 FAutoConsoleCommand SetMultiLogLevel(
 	TEXT("MultiLog.SetMultiLogLevel"),
-	TEXT("MultiLog.SetMultiLogLevel LogTypeName LogLeveln\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"),
+	TEXT("MultiLog.SetMultiLogLevel LogTypeName LogLevel\n\nMultiLogLevel::NoLog = -1\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"),
 	FConsoleCommandWithWorldArgsAndOutputDeviceDelegate::CreateStatic(
 		[](const TArray<FString>& Param, UWorld* _World, FOutputDevice& OutputDevice)
 		{
@@ -30,7 +30,7 @@ FAutoConsoleCommand SetMultiLogLevel(
 				}
 				else
 				{
-					OutputDevice.Logf(TEXT("LogLevel error!\n\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"));
+					OutputDevice.Logf(TEXT("LogLevel error!\n\nMultiLogLevel::NoLog = -1\nMultiLogLevel::Error = 1\nMultiLogLevel::Warning = 2\nMultiLogLevel::Info = 3\nMultiLogLevel::DebugInfo = 4"));
 				}
 			}
 			else

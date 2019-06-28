@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "LogTest.h"
+﻿#include "LogTest.h"
 #include "MultiLogSubsystem.h"
 
 // Sets default values

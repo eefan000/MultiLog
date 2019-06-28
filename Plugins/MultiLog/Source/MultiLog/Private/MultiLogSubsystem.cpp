@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "MultiLogSubsystem.h"
+﻿#include "MultiLogSubsystem.h"
 
 // 注册控制台指令
 FAutoConsoleCommand SetMultiLogLevel(

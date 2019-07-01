@@ -6,18 +6,30 @@ FMultiLogWriteWorker* FMultiLogWriteWorker::Runnable = NULL;
 
 void FMultiLogWriteWorker::WriteLogBuffToFile(bool IsFlush)
 {
-	LineLog Temp;
+	LogInfo Temp;
 	while (LogBuff.Dequeue(Temp))
 	{
-		Temp.LogFile.File->Serialize(TCHAR_TO_UTF8(*Temp.Line), Temp.Line.Len());
+		FString LineLog = Temp.PrintLogTime.ToString(TEXT("[%Y.%m.%d-%H.%M.%S.%s] "));
+		switch (Temp.LogLevel)
+		{
+		case EMultiLogLevel::Error:		LineLog.Append(TEXT("[Error] : "));		break;
+		case EMultiLogLevel::Warning:	LineLog.Append(TEXT("[Warning] : "));	break;
+		case EMultiLogLevel::Info:		LineLog.Append(TEXT("[Info] : "));		break;
+		case EMultiLogLevel::DebugInfo:	LineLog.Append(TEXT("[DebugInfo] : "));	break;
+		default: checkf(false, TEXT("UMultiLogSubsystem::AddLog Error!!!! EMultiLogLevel Mismatch!"));
+		}
+		LineLog.Append(Temp.LogContent);
+		LineLog.AppendChar(TEXT('\n'));
+
+		Temp.LogFile->Serialize(TCHAR_TO_UTF8(*LineLog), LineLog.Len());
 		if (IsFlush)
 		{
-			Temp.LogFile.File->Flush();
+			Temp.LogFile->Flush();
 		}
 	}
 }
 
-void FMultiLogWriteWorker::AddLog(LineLog&& Log)
+void FMultiLogWriteWorker::AddLog(LogInfo&& Log)
 {
 	LogBuff.Enqueue(MoveTemp(Log));
 }

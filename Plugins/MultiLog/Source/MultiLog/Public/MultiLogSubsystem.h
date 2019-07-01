@@ -4,8 +4,10 @@
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "MultiLogType.h"
-#include "MultiLogWriteThreads.h"
+#include "HAL/CriticalSection.h"
 #include "MultiLogSubsystem.generated.h"
+
+class FMultiLogWriteWorker;
 
 UCLASS()
 class MULTILOG_API UMultiLogSubsystem : public UEngineSubsystem
@@ -15,6 +17,23 @@ class MULTILOG_API UMultiLogSubsystem : public UEngineSubsystem
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+private:
+	//void AddLog_Inward(LogFileInfo* Info, const FString& LogTypeName, FString& LineLog, const EMultiLogLevel Level);
+	LogFileInfo* FindOrAdd_LogFileInfo(const FName& LogTypeName);
+
+	static UMultiLogSubsystem* MultiLogSubsystem;
+
+	// 子系统启动时间
+	FString InitTime;
+
+	FMultiLogWriteWorker* LogWriteWorker;
+
+	FCriticalSection AllLogFileInfo_Lock;
+	/* 日志类型应该比较少,大概不会超过100, 100以内搜索速度比TMap更快 */
+	TArray<LogFileInfo> AllLogFileInfo;
+
+	void AddLog_Private(LogInfo&& Log);
+
 public:
 	/* 用户接口 */
 	/**
@@ -24,47 +43,23 @@ public:
 	建议: 建议将这个接口用宏封装起来,比如 LOG_Error()...
 	*/
 	template<typename FmtType, typename ...Types>
-	static void AddLog(const FString& LogTypeName, const EMultiLogLevel Level, const FmtType& Format, Types ...Args)
+	static void AddLog(const FName& LogTypeName, const EMultiLogLevel Level, const FmtType& Format, Types ...Args)
 	{
 		if (IsValid(MultiLogSubsystem))
 		{
-			FString Log = FString::Printf(Format, Args...);
-
-			FDateTime CurrTime = FDateTime::Now();
-			FString LineLog = CurrTime.ToString(TEXT("[%Y.%m.%d-%H.%M.%S.%s] "));
-			switch (Level)
+			LogFileInfo* Info = MultiLogSubsystem->FindOrAdd_LogFileInfo(LogTypeName);
+			if (Level <= Info->NowLogLevel)
 			{
-			case EMultiLogLevel::Error:		LineLog.Append(TEXT("[Error] : "));		break;
-			case EMultiLogLevel::Warning:	LineLog.Append(TEXT("[Warning] : "));	break;
-			case EMultiLogLevel::Info:		LineLog.Append(TEXT("[Info] : "));		break;
-			case EMultiLogLevel::DebugInfo:	LineLog.Append(TEXT("[DebugInfo] : "));	break;
-			default: checkf(false, TEXT("UMultiLogSubsystem::AddLog Error!!!! EMultiLogLevel Mismatch!"));
+				FString LogContent = FString::Printf(Format, Args...);
+				MultiLogSubsystem->AddLog_Private( LogInfo(Info->AllLogFileInfo_Index, MoveTemp(LogContent), Info->File, Level) );
 			}
-			LineLog.Append(Log);
-			LineLog.AppendChar(TEXT('\n'));
-
-			MultiLogSubsystem->AddLog_Inward(LogTypeName, LineLog, Level);
 		}
 	};
 
 	/* 蓝图调用得打印日志接口 */
 	UFUNCTION(BlueprintCallable, Category = "MultiLogSubsystem")
-	void PrintLog(const FString& LogTypeName, const FString& Log, const EMultiLogLevel Level);
+	void PrintLog(const FName& LogTypeName, const FString& Log, const EMultiLogLevel Level);
 
 	/* 设置日志等级 */
 	static bool SetMultiLogLeve(const FString& LogTypeName, const EMultiLogLevel Level);
-
-	/* 注册日志文件类型 */
-	static LogFileInfo* RegisterLogTypeName(const FString& LogTypeName);
-
-private:
-	void AddLog_Inward(const FString& LogTypeName, FString& LineLog, const EMultiLogLevel Level);
-
-	static UMultiLogSubsystem* MultiLogSubsystem;
-
-	// 子系统启动时间
-	FString InitTime;
-
-	FMultiLogWriteWorker LogWriteWorker;
-	TMap<FString, LogFileInfo> MultiLogFile;
 };

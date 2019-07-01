@@ -20,20 +20,24 @@ void ALogTest::BeginPlay()
 void ALogTest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test1")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test2")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+	static FName test1(TEXT("test1"));
+	UMultiLogSubsystem::AddLog(test1, EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test1, EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test1, EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test1, EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
-	UMultiLogSubsystem::AddLog(FString(TEXT("test3")), EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+	static FName test2(TEXT("test2"));
+	UMultiLogSubsystem::AddLog(test2, EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test2, EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test2, EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test2, EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
+
+	static FName test3(TEXT("test3"));
+	UMultiLogSubsystem::AddLog(test3, EMultiLogLevel::DebugInfo, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test3, EMultiLogLevel::Error, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test3, EMultiLogLevel::Info, TEXT("%02d:%02d"), 1, 2);
+	UMultiLogSubsystem::AddLog(test3, EMultiLogLevel::Warning, TEXT("%02d:%02d"), 1, 2);
 
 	/*UE_LOG(LogTemp, Log, TEXT("%02d:%02d"), 1, 2);
 	UE_LOG(LogTemp, Log, TEXT("%02d:%02d"), 1, 2);

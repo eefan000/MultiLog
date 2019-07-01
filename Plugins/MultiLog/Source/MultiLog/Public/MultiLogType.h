@@ -19,17 +19,35 @@ enum EMultiLogLevel
 
 struct LogFileInfo
 {
-	// 当前日志等级,默认只打印 LogLevel::Info及以上
-	EMultiLogLevel NowLogLevel = EMultiLogLevel::Info;
+	int32 AllLogFileInfo_Index;
+	FName LogTypeName;
+	// 当前日志等级,默认只打印 EMultiLogLevel::Info及以上
+	EMultiLogLevel NowLogLevel;
 	// 当前日志文件句柄
 	FArchive* File;
+
+	LogFileInfo(int32 AllLogFileInfo_Index, const FName& LogTypeName, EMultiLogLevel NowLogLevel, FArchive* File) :
+		AllLogFileInfo_Index(AllLogFileInfo_Index),
+		LogTypeName(LogTypeName),
+		NowLogLevel(NowLogLevel),
+		File(File)
+	{};
 };
 
-struct LineLog
+struct LogInfo
 {
-	FString Line;
-	LogFileInfo LogFile;
+	int32 AllLogFileInfo_Index;
+	FString LogContent;
+	FArchive* LogFile;
+	FDateTime PrintLogTime;
+	EMultiLogLevel LogLevel;
 
-	LineLog() {};
-	LineLog(FString& Line, LogFileInfo* LogFile) : Line(Line), LogFile(*LogFile) {};
+	LogInfo() {};
+	LogInfo(int32 AllLogFileInfo_Index, FString&& LogContent, FArchive* LogFile, EMultiLogLevel LogLevel) :
+		AllLogFileInfo_Index(AllLogFileInfo_Index), 
+		LogContent(LogContent), 
+		LogFile(LogFile),
+		PrintLogTime(FDateTime::Now()),
+		LogLevel(LogLevel)
+	{};
 };

@@ -19,11 +19,11 @@ class FMultiLogWriteWorker : public FRunnable
 
 private:
 	/** 待写入文件的日志 */
-	TQueue<LineLog, EQueueMode::Mpsc> LogBuff;
+	TQueue<LogInfo, EQueueMode::Mpsc> LogBuff;
 
 	void WriteLogBuffToFile(bool IsFlush = false);
 public:
-	void AddLog(LineLog&& Log);
+	void AddLog(LogInfo&& Log);
 public:
 	// 是否完成所有写入工作
 	bool IsFinished() const

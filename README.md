@@ -1,6 +1,8 @@
 <a name="dWsLc"></a>
 ## 简介
 - 简易的多文件日志打印 Simple Multi-file Log Printing
+- 由于是多线程异步打印,在强行结束进程时,会遗漏一些日志.
+- 正常关闭进程会等待完全写入.
 <a name="XM9kU"></a>
 ## 使用方式
 
